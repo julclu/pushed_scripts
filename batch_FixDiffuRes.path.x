@@ -4,7 +4,10 @@
 
 if ($#argv > 1 ) then
     echo " "
-    echo "Please input the path to the list you'd like to fix."
+    echo "Please input the path to the list of scans you'd like to fix."
+    echo "the diffusion resolution for."
+    echo "The path should be in the format PathToCsvWithBnumTnumList/bnumtnumlist.#.csv"
+    echo "Where # represents the number of scans you'd like to fix."
     exit(1)
 endif
 
@@ -15,7 +18,7 @@ endif
 set n = $1
 set b = `more $n | cut -d"," -f1`
 set t = `more $n | cut -d"," -f2`
-set sf = `more $n | cut -d"," -f3`
+
 
 set flag = 0
 @ i = 1
@@ -28,9 +31,9 @@ while ($i <= $m)
 
 set bnum = `echo ${b} | cut -d" " -f$i`
 set tnum = `echo ${t} | cut -d" " -f$i`
-set sfnum = `echo ${sf} | cut -d" " -f$i`
 
-echo $i $bnum $tnum $sfnum
+
+echo $i $bnum $tnum 
 
 cd /data/bioe2/*/${bnum}/${tnum}
 
