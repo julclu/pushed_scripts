@@ -13,7 +13,6 @@ endif
 
 
 set n = $1
-set broot = /data/bioe2/REC_HGG
 set b = `more $n | cut -d"," -f1`
 set t = `more $n | cut -d"," -f2`
 set sf = `more $n | cut -d"," -f3`
@@ -35,7 +34,7 @@ echo $i $bnum $tnum $sfnum
 
 cd /data/bioe2/*/${bnum}/${tnum}
 
-/home/sf673542/analysis/purest_data/updated_scripts/fix_diffu_res.x $bnum $tnum $sfnum
+/home/sf673542/pushed_scripts/fix_diffu_res.x $bnum $tnum 
 
 
 @ i = $i + 1
