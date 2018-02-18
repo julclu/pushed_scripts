@@ -14,7 +14,6 @@ endif
 set n = $1
 set b = `more $n | cut -d"," -f1`
 set t = `more $n | cut -d"," -f2`
-set sf = `more $n | cut -d"," -f3`
 
 set flag = 0
 @ i = 1
@@ -24,7 +23,7 @@ set flag = 0
 while ($i <= $m)
 set bnum = `echo ${b} | cut -d" " -f$i`
 set tnum = `echo ${t} | cut -d" " -f$i`
-@ sfnum = `echo ${sf} | cut -d" " -f$i`
+set sfnum = 
 
 echo $i $bnum $tnum $sfnum
 
