@@ -28,8 +28,8 @@ set bnum = `echo ${b} | cut -d" " -f$i`
 set tnum = `echo ${t} | cut -d" " -f$i`
 set sfnum = `echo ${sf} | cut -d" " -f$i`
 
-if (-d /data/bioe2/REC_HGG/${bnum}/${tnum}/diffusion_b=1000) then
-	cd /data/bioe2/REC_HGG/${bnum}/${tnum}/diffusion_b=1000
+if (-d /data/RECglioma/${bnum}/${tnum}/diffusion_b=1000) then
+	cd /data/RECglioma/${bnum}/${tnum}/diffusion_b=1000
 	echo "Changed into diffusion directory of $bnum $tnum"
 	if (-e ${tnum}_1000_adca.idf) then
 		set diffu_status = "Processed."
@@ -41,7 +41,7 @@ if (-d /data/bioe2/REC_HGG/${bnum}/${tnum}/diffusion_b=1000) then
 		 echo $diffu_status
 	endif
 else 
-	cd /data/bioe2/REC_HGG/${bnum}/${tnum}
+	cd /data/RECglioma/${bnum}/${tnum}
 	set Enum = `ls -d E*`
 	set Snum_tmp = `dcm_exam_info -${tnum} | grep '24' | awk '{print $1}'`		
 	set Snum = $Snum_tmp[1]

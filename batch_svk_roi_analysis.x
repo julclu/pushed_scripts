@@ -12,7 +12,6 @@ if ($#argv > 1 ) then
     exit(1)
 endif
 set n = $1
-set broot = /data/bioe2/REC_HGG
 set b = `more $n | cut -d"," -f1`
 set t = `more $n | cut -d"," -f2`
 set sf = `more $n | cut -d"," -f3`

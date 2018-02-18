@@ -27,7 +27,7 @@ set flag = 0
 @ i = 1
 @ m = `echo $n | cut -d"." -f2`
 
-echo "i bnum tnum "
+echo "i bnum tnum b2000_run b2000_process_status b2000_disk_status"
 while ($i <= $m)
 
     set bnum = `echo ${b} | cut -d" " -f$i`
@@ -36,7 +36,28 @@ while ($i <= $m)
     ## Change "RECglioma here to a * or to NEWglioma or whichever directory your data is stored in."
     cd /data/RECglioma/${bnum}/${tnum}/
 
-    /home/sf673542/analysis/diffu_bnum_comparison/updated_scripts/get_align_dti2000.x 
-    
+    set Enum = `ls -d E*`
+    set Snum = `dcm_exam_info -${tnum} | grep 'HARDI' | awk 'NR==1{print $1}'`
+    if ($Snum != '') then ## if the 2000 was run 
+        set b2000_run = 1
+        if (-d diffusion_b=2000) then ## if there exists a diffu_b2000 folder already
+            set b2000_process_status = "already_processed"
+        else 
+            if (-e ${Enum}/${Snum}/${Enum}S${Snum}I1.DCM) then ## if exists on disk, don't import
+                set b2000_disk_status = "already_exists"
+            else 
+                dcm_qr -${tnum} -s $Snum -e $cwd -g
+                set b2000_disk_status = "imported"
+            endif
+            process_DTI_brain ${Enum}/${Snum} ${tnum} > tmp_bproc.txt
+            set b2000_process_status = "processed_now"
+            rm -r ${Enum}/${Snum}
+        endif
+    else 
+        set b2000_run = 0
+        set b2000_process_status = "NA"
+        set b2000_disk_status = "NA"
+    endif
+    echo $i $bnum $tnum $b2000_run $b2000_process_status $b2000_disk_status
     @ i = $i + 1
 end 
