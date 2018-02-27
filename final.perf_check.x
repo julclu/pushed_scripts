@@ -73,6 +73,18 @@ endif
 
 if (-d perf_aligned) then
     set perf_aligned_f = 1
+    cd perf_aligned
+    if (-d non_parametric) then 
+        non_param_f = 1
+    else
+        non_param_f = 0
+    endif
+    if (-d nonlin_fit) then
+        nonlin_fit_f = 1
+    else
+        nonlin_fit_f = 0 
+    endif
+    cd ..
 else
     set perf_aligned_f = 0
 endif
@@ -84,14 +96,14 @@ else
 endif
 
 echo "folders that exist:"
-echo "perf perf_topupAligned non_parametric nonlin_fit perf_aligned perf_biospy"
-echo $perf_folder $perf_topupAligned_f $non_param_f $nonlin_fit_f $perf_aligned_f $perf_biopsy_f
+echo "perf perf_topupAligned perf_aligned non_parametric nonlin_fit perf_biospy"
+echo $perf_folder $perf_topupAligned_f $perf_aligned_f $non_param_f $nonlin_fit_f $perf_biopsy_f
 
 
 
 ## --------------------------- Which files that we are interested in exist? ---------------------------------
 
 
-
+## 
 
 
