@@ -1,14 +1,52 @@
 #!/bin/csh -f
 
 
-## This is to check in a single tnum if you have all the things you want in your perfusion data
+## Written by J. Cluceru on 02.26.2018
 
+## This script is to check the entire workflow of perfusion and what has been completed 
+## Please use input using a path to a .csv file which is formatted to bnum/tnum/DUMMY;
+## there should be no header labeling 
+## the bnum/tnum. It must be labeled with the number (#) of bnum/tnum as a .#.csv 
+## Final version completed on 
+
+
+if ($#argv < 1 ) then
+    echo ""
+    echo "This script is for you to understand what has been completed for diffusion scans."
+    echo "The output will be a list of what has been completed."
+    echo ""
+    echo "An example of it's usage would be /pathtoscript/batch.final.perf_check.x /pathtobnum_tnumlist/bnumtnumlist.#.csv"
+    echo ""
+    echo "Please input the path to the list of bnum/tnum you'd like to check. Make sure naming conventions are correct."
+    echo ""
+
+    exit(1)
+
+endif
+
+set n = $1
+set broot = /data/RECglioma
+set b = `more $n | cut -d"," -f1`
+set t = `more $n | cut -d"," -f2`
+
+set flag = 0
+@ i = 1
+@ m = `echo $n | cut -d"." -f2`
+
+#echo "i bnum tnum b1000_run b1000_folder b1000_adc b1000_adca b1000_adca_res b1000_faa b2000_run b2000_folder b2000_adc b2000_adca b2000_adca_res b2000_faa svk_roi_analysis svk_adca1000_tab svk_ev1000_tab svk_adca1000_csv svk_ev1000_csv svk_adca2000_tab svk_ev2000_tab svk_adca2000_csv svk_ev2000_csv roi_analysis biopsyval_adca1000 biopsyval_ev1000 biopsyval_adca2000 biopsyval_ev2000"
+echo "i bnum tnum perf_run dsc_run topup_dsc_run asl_run perf perf_aligned perf_topupAligned nonparam ph_np recov_np nonlin ph_nl recov_nl perf_biopsy"
+
+while ($i <= $m)
+
+set bnum = `echo ${b} | cut -d" " -f$i`
+set tnum = `echo ${t} | cut -d" " -f$i`
+
+cd /data/RECglioma/${bnum}/${tnum}/
 
 ## First we want to just check what kind of perfusion processing has been run 
 
 ## Just by running dcm_exam_info 
 ## --------------------------- Which perfusion series run? ---------------------------------
-set tnum = `pwd | cut -d"/" -f5`
 set perf_series = `dcm_exam_info -${tnum} | grep 'Perfusion' | awk 'NR==1{print $1}'`
 set dsc_series = `dcm_exam_info -${tnum} | grep 'DSC' | awk 'NR==1{print $1}'`
 set topup_dsc_series = `dcm_exam_info -${tnum} | grep 'DSC' | grep 'TOPUP' | awk 'NR==1{print $1}'`
@@ -42,9 +80,9 @@ if ($asl_series != "") then
 else 
     set asl_run = 0
 endif
-echo "series run:"
-echo "Perfusion DSC_Perf DSC_TopUp ASL"
-echo $perf_run $dsc_run $topup_dsc_run $asl_run
+#echo "series run:"
+#echo "Perfusion DSC_Perf DSC_TopUp ASL"
+
 
 ## --------------------------- Which perfusion folders exist? ---------------------------------
 if (-d perf) then
@@ -91,11 +129,7 @@ if (-d perf_topupAligned) then
         set nonlin_fit_f = 0 
     endif
     cd ..
-else
-    set perf_topupAligned_f = 0
-endif
-
-if (-d perf_aligned) then
+else if (-d perf_aligned) then
     set perf_aligned_f = 1
     cd perf_aligned
     if (-d non_parametric) then 
@@ -134,7 +168,14 @@ if (-d perf_aligned) then
     endif
     cd ..
 else
+    set perf_topupAligned_f = 0
     set perf_aligned_f = 0
+    set non_param_f = 'NA'
+    set ph_np_idf = 'NA'
+    set recov_np_idf = 'NA'
+    set nonlin_fit_f = 'NA'
+    set ph_nl_idf = 'NA'
+    set recov_nl_idf = 'NA'
 endif
 
 if (-d roi_analysis) then
@@ -161,14 +202,16 @@ else
     set perf_biopsy_f = 0 
 endif
 
-echo "folders and files that exist:"
-echo "perf perf_topupAligned perf_aligned non_parametric nonlin_fit ph_np recov_np ph_nl recov_nl perf_biospy vials_in_perf_biopsy"
-echo $perf_folder $perf_topupAligned_f $perf_aligned_f $non_param_f $nonlin_fit_f $ph_np_idf $recov_np_idf $ph_nl_idf $recov_nl_idf $perf_biopsy_f $vialID_f
+#echo "perf perf_topupAligned perf_aligned non_parametric nonlin_fit ph_np recov_np ph_nl recov_nl perf_biospy vials_in_perf_biopsy"
+#echo $perf_folder $perf_topupAligned_f $perf_aligned_f $non_param_f $nonlin_fit_f $ph_np_idf $recov_np_idf $ph_nl_idf $recov_nl_idf $perf_biopsy_f $vialID_f
 
 
 
 ## --------------------------- Which files that we are interested in exist? ---------------------------------
 
 ## 
+echo $i $bnum $tnum $perf_run $dsc_run $topup_dsc_run $asl_run $perf_folder $perf_topupAligned_f $perf_aligned_f $non_param_f $ph_np_idf $recov_np_idf $nonlin_fit_f $ph_nl_idf $recov_nl_idf $perf_biopsy_f
+@ i = $i + 1
+end 
 
 
