@@ -42,9 +42,7 @@ if ($asl_series != "") then
 else 
     set asl_run = 0
 endif
-echo "series run:"
-echo "Perfusion DSC_Perf DSC_TopUp ASL"
-echo $perf_run $dsc_run $topup_dsc_run $asl_run
+
 
 ## --------------------------- Which perfusion folders exist? ---------------------------------
 if (-d perf) then
@@ -55,6 +53,7 @@ endif
 
 if (-d perf_topupAligned) then
     set perf_topupAligned_f = 1
+    set perf_aligned_f = 0
     cd perf_topupAligned
     if (-d non_parametric) then 
         set non_param_f = 1
@@ -91,12 +90,9 @@ if (-d perf_topupAligned) then
         set nonlin_fit_f = 0 
     endif
     cd ..
-else
-    set perf_topupAligned_f = 0
-endif
-
-if (-d perf_aligned) then
+else if (-d perf_aligned) then
     set perf_aligned_f = 1
+    set perf_topupAligned_f = 0
     cd perf_aligned
     if (-d non_parametric) then 
         set non_param_f = 1
@@ -114,6 +110,8 @@ if (-d perf_aligned) then
         cd ..
     else
         set non_param_f = 0
+        set ph_np_idf = 'NA'
+        set recov_np_idf = 'NA'
     endif
     if (-d nonlin_fit) then
         set nonlin_fit_f = 1
@@ -131,11 +129,23 @@ if (-d perf_aligned) then
         cd ..
     else
         nonlin_fit_f = 0 
+        set ph_nl_idf = 'NA'
+        set recov_nl_idf = 'NA'
     endif
     cd ..
 else
     set perf_aligned_f = 0
+    set perf_topupAligned_f = 0
+    set non_param_f = 'NA'
+    set nonlin_fit_f = 'NA'
+    set ph_nl_idf = 'NA'
+    set recov_nl_idf = 'NA'
+    set ph_np_idf = 'NA'
+    set recov_np_idf = 'NA'
 endif
+
+
+echo "checked folders"
 
 if (-d roi_analysis) then
     set vialID = `ls roi_analysis/${tnum}_t1ca_*.byt | cut -d"/" -f2 | cut -d"_" -f3 | cut -d "." -f1`
@@ -144,26 +154,43 @@ endif
 
 if (-d perf_biopsy) then
     set perf_biopsy_f = 1
+
     ## here I want to check if for all vialIDs in the roi_analysis folder, if there are corresponding folders in perf_biopsy
-#    if (-d roi_analysis) then
-#        @ j = 1
-#        while ($j <= $bionum)
-#            set tmp_dir = $vialID[$j]
-#            if (-d $tmp_dir) then
-#                set vialID_f = 1
-#            else
-#                set vialID_f = 0
-#            endif
-#            @ j = $j + 1 
-#        end
-#    endif
+    if (-d roi_analysis) then
+        cd perf_biopsy
+        @ j = 1
+        while ($j <= $bionum)
+            set tmp_dir = $vialID[$j]
+            if (-d $tmp_dir) then
+                set vialID_f = 1
+                if (-e ${tnum}_${tmp_dir}_ave_curve_nonlinfit.txt) then
+                    set bio_nonlin_fit_f = 1
+                else 
+                    set bio_nonlin_fit_f = 0
+                endif
+                if (-e ${tnum}_${tmp_dir}_ave_curve_nonparam.txt) then
+                    set bio_nonparam_fit_f = 1
+                else
+                    set bio_nonparam_fit_f = 0
+                endif
+            else
+                set vialID_f = 0
+                set bio_nonparam_fit_f = "NA"
+                set bio_nonlin_fit_f = "NA"
+                break
+            endif
+            @ j = $j + 1 
+        end
+    endif
 else 
     set perf_biopsy_f = 0 
+    set vialID_f = 'NA'
+    set bio_nonparam_fit_f = "NA"
+    set bio_nonlin_fit_f = "NA"
 endif
 
-echo "folders and files that exist:"
-echo "perf perf_topupAligned perf_aligned non_parametric nonlin_fit ph_np recov_np ph_nl recov_nl perf_biospy vials_in_perf_biopsy"
-echo $perf_folder $perf_topupAligned_f $perf_aligned_f $non_param_f $nonlin_fit_f $ph_np_idf $recov_np_idf $ph_nl_idf $recov_nl_idf $perf_biopsy_f $vialID_f
+echo "perf perf_topupAligned perf_aligned non_parametric nonlin_fit ph_np recov_np ph_nl recov_nl perf_biospy bio_nonparam_fit bio_nonlin_fit "
+echo $perf_folder $perf_topupAligned_f $perf_aligned_f $non_param_f $nonlin_fit_f $ph_np_idf $recov_np_idf $ph_nl_idf $recov_nl_idf $perf_biopsy_f $bio_nonparam_fit_f $bio_nonlin_fit_f
 
 
 

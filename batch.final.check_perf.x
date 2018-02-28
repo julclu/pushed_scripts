@@ -34,7 +34,7 @@ set flag = 0
 @ m = `echo $n | cut -d"." -f2`
 
 #echo "i bnum tnum b1000_run b1000_folder b1000_adc b1000_adca b1000_adca_res b1000_faa b2000_run b2000_folder b2000_adc b2000_adca b2000_adca_res b2000_faa svk_roi_analysis svk_adca1000_tab svk_ev1000_tab svk_adca1000_csv svk_ev1000_csv svk_adca2000_tab svk_ev2000_tab svk_adca2000_csv svk_ev2000_csv roi_analysis biopsyval_adca1000 biopsyval_ev1000 biopsyval_adca2000 biopsyval_ev2000"
-echo "i bnum tnum perf_run dsc_run topup_dsc_run asl_run perf perf_aligned perf_topupAligned nonparam ph_np recov_np nonlin ph_nl recov_nl perf_biopsy"
+echo "i bnum tnum perf_run dsc_run topup_dsc_run asl_run perf perf_aligned perf_topupAligned nonparam ph_np recov_np nonlin ph_nl recov_nl perf_biopsy bio_nonparam_fit bio_nonlin_fit"
 
 while ($i <= $m)
 
@@ -93,6 +93,7 @@ endif
 
 if (-d perf_topupAligned) then
     set perf_topupAligned_f = 1
+    set perf_aligned_f = 0
     cd perf_topupAligned
     if (-d non_parametric) then 
         set non_param_f = 1
@@ -131,6 +132,7 @@ if (-d perf_topupAligned) then
     cd ..
 else if (-d perf_aligned) then
     set perf_aligned_f = 1
+    set perf_topupAligned_f = 0
     cd perf_aligned
     if (-d non_parametric) then 
         set non_param_f = 1
@@ -148,6 +150,8 @@ else if (-d perf_aligned) then
         cd ..
     else
         set non_param_f = 0
+        set ph_np_idf = 'NA'
+        set recov_np_idf = 'NA'
     endif
     if (-d nonlin_fit) then
         set nonlin_fit_f = 1
@@ -164,19 +168,22 @@ else if (-d perf_aligned) then
         endif
         cd ..
     else
-        nonlin_fit_f = 0 
+        set nonlin_fit_f = 0 
+        set ph_nl_idf = 'NA'
+        set recov_nl_idf = 'NA'
     endif
     cd ..
 else
-    set perf_topupAligned_f = 0
     set perf_aligned_f = 0
+    set perf_topupAligned_f = 0
     set non_param_f = 'NA'
-    set ph_np_idf = 'NA'
-    set recov_np_idf = 'NA'
     set nonlin_fit_f = 'NA'
     set ph_nl_idf = 'NA'
     set recov_nl_idf = 'NA'
+    set ph_np_idf = 'NA'
+    set recov_np_idf = 'NA'
 endif
+
 
 if (-d roi_analysis) then
     set vialID = `ls roi_analysis/${tnum}_t1ca_*.byt | cut -d"/" -f2 | cut -d"_" -f3 | cut -d "." -f1`
@@ -185,21 +192,39 @@ endif
 
 if (-d perf_biopsy) then
     set perf_biopsy_f = 1
+
     ## here I want to check if for all vialIDs in the roi_analysis folder, if there are corresponding folders in perf_biopsy
-#    if (-d roi_analysis) then
-#        @ j = 1
-#        while ($j <= $bionum)
-#            set tmp_dir = $vialID[$j]
-#            if (-d $tmp_dir) then
-#                set vialID_f = 1
-#            else
-#                set vialID_f = 0
-#            endif
-#            @ j = $j + 1 
-#        end
-#    endif
+    if (-d roi_analysis) then
+        cd perf_biopsy
+        @ j = 1
+        while ($j <= $bionum)
+            set tmp_dir = $vialID[$j]
+            if (-d $tmp_dir) then
+                set vialID_f = 1
+                if (-e ${tnum}_${tmp_dir}_ave_curve_nonlinfit.txt) then
+                    set bio_nonlin_fit_f = 1
+                else 
+                    set bio_nonlin_fit_f = 0
+                endif
+                if (-e ${tnum}_${tmp_dir}_ave_curve_nonparam.txt) then
+                    set bio_nonparam_fit_f = 1
+                else
+                    set bio_nonparam_fit_f = 0
+                endif
+            else
+                set vialID_f = 0
+                set bio_nonparam_fit_f = "NA"
+                set bio_nonlin_fit_f = "NA"
+                break
+            endif
+            @ j = $j + 1 
+        end
+    endif
 else 
     set perf_biopsy_f = 0 
+    set vialID_f = 'NA'
+    set bio_nonparam_fit_f = "NA"
+    set bio_nonlin_fit_f = "NA"
 endif
 
 #echo "perf perf_topupAligned perf_aligned non_parametric nonlin_fit ph_np recov_np ph_nl recov_nl perf_biospy vials_in_perf_biopsy"
@@ -210,7 +235,8 @@ endif
 ## --------------------------- Which files that we are interested in exist? ---------------------------------
 
 ## 
-echo $i $bnum $tnum $perf_run $dsc_run $topup_dsc_run $asl_run $perf_folder $perf_topupAligned_f $perf_aligned_f $non_param_f $ph_np_idf $recov_np_idf $nonlin_fit_f $ph_nl_idf $recov_nl_idf $perf_biopsy_f
+echo $i $bnum $tnum $perf_run $dsc_run $topup_dsc_run $asl_run $perf_folder $perf_topupAligned_f $perf_aligned_f $non_param_f $nonlin_fit_f $ph_np_idf $recov_np_idf $ph_nl_idf $recov_nl_idf $perf_biopsy_f $bio_nonparam_fit_f $bio_nonlin_fit_f
+
 @ i = $i + 1
 end 
 
