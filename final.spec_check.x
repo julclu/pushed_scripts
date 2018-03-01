@@ -7,7 +7,8 @@ set tnum = `pwd | cut -d"/" -f5`
 set MRSI_series = `dcm_exam_info -${tnum} | grep 'MRSI' | awk 'NR==1{print $1}'`
 set LAC_series = `dcm_exam_info -${tnum} | grep -i 'LAC' | awk 'NR==1{print $1}'`
 set short_series = `dcm_exam_info -${tnum} | grep 'MRSI' | grep -i 'short' | awk 'NR==1{print $1}'`
-
+set MRSI_series_total = `dcm_exam_info -${tnum} | grep 'MRSI' | awk '{print $1}'`
+@ num_MRSI_series = `echo "${#MRSI_series_total}"`
 # mrsi 
 ## indicates that a series including the word "MRSI" was run
 if ($MRSI_series != "") then 
@@ -82,8 +83,6 @@ else
     endif
 endif 
 
-echo "mrsi_run lac_run short_run spectra_f spec_sing_f spec_short_f spec_lac_f lacemode"
-echo $mrsi_run $lac_run $short_run $spectra_f $spec_sing_f $spec_short_f $spec_lac_f $lacemode
 
 ## Now you know for real whether the lactate editing was on in the machine or not - 
 
@@ -99,10 +98,21 @@ if (-d svk_roi_analysis) then
     else 
         set svk_spec_lac_tab = 0
     endif
+    if (-e svk_roi_analysis/${tnum}_lac_fbhsvdfcomb_biopsy_empcsahl_normxs_sinc.csv) then
+        set svk_spec_lac_csv = 1
+    else 
+        set svk_spec_lac_csv = 0
+    endif
     if (-e svk_roi_analysis/${tnum}_single_fbhsvdfcomb_biopsy_empcsahl_normxs_sinc.tab) then
         set svk_spec_single_tab = 1
     else
         set svk_spec_single_tab = 0
+    endif
+    if (-e svk_roi_analysis/${tnum}_single_fbhsvdfcomb_biopsy_empcsahl_normxs_sinc.csv) then
+        set svk_spec_single_csv = 1
+    else
+        set svk_spec_single_csv = 0
+    endif
 endif
 ## Biopsy evaluation 
 ## ----------------------------------------------------------------------
@@ -111,21 +121,33 @@ if (-d roi_analysis) then
     set vialID = `ls roi_analysis/${tnum}_t1ca_*.byt | cut -d"/" -f2 | cut -d"_" -f3 | cut -d "." -f1`
     @ bionum = `echo "${#vialID}"`
     if (-e svk_roi_analysis/${tnum}_lac_fbhsvdfcomb_biopsy_empcsahl_normxs_sinc.tab) then
-        set biopyval = 0
-
+        set biopsyval = 0
         @ index = 1
         while ($index <= $bionum)
             set vialid_index = `echo $vialID[$index]`
-                  if (`echo $biopsyval` == '0' && `more svk_roi_analysis/${tnum}_lac_fbhsvdfcomb_biopsy_empcsahl_normxs_sinc.tab | grep $vialid_index | awk 'NR==2{print $4}'` != '0.00' && `more svk_roi_analysis/${tnum}_lac_fbhsvdfcomb_biopsy_empcsahl_normxs_sinc.tab | grep $vialid_index | awk 'NR==2{print $4}'` != '') then
+                if (`echo $biopsyval` == '0' && `more svk_roi_analysis/${tnum}_lac_fbhsvdfcomb_biopsy_empcsahl_normxs_sinc.tab | grep $vialid_index | awk 'NR==2{print $4}'` != '0.00' && `more svk_roi_analysis/${tnum}_lac_fbhsvdfcomb_biopsy_empcsahl_normxs_sinc.tab | grep $vialid_index | awk 'NR==2{print $4}'` != '') then
+                    set biopsyval = 1
+                endif
+            @ index = $index + 1
+        end
+    else if (-e svk_roi_analysis/${tnum}_single_fbhsvdfcomb_biopsy_empcsahl_normxs_sinc.tab) then
+        set biopsyval = 0
+        @ index = 1
+        while ($index <= $bionum)
+            set vialid_index = `echo $vialID[$index]`
+                if (`echo $biopsyval` == '0' && `more svk_roi_analysis/${tnum}_single_fbhsvdfcomb_biopsy_empcsahl_normxs_sinc.tab | grep $vialid_index | awk 'NR==2{print $4}'` != '0.00' && `more svk_roi_analysis/${tnum}_single_fbhsvdfcomb_biopsy_empcsahl_normxs_sinc.tab | grep $vialid_index | awk 'NR==2{print $4}'` != '') then
                     set biopsyval = 1
                 endif
             @ index = $index + 1
         end
     else 
-        set biospyval = 'NA'
+        set biopsyval = 'NA'
     endif 
 else 
   set roi_analysis = 0 
   set biopsyval = 'NA'
-  set vialid_res = 'NA'
 endif 
+
+echo "mrsi_run num_MRSI_series lac_run short_run spectra_f spec_sing_f spec_short_f spec_lac_f lacemode svk_spec_lac_tab svk_spec_lac_csv svk_spec_single_tab svk_spec_single_csv biopsyval"
+echo $mrsi_run $num_MRSI_series $lac_run $short_run $spectra_f $spec_sing_f $spec_short_f $spec_lac_f $lacemode $svk_spec_lac_tab $svk_spec_lac_csv $svk_spec_single_tab $svk_spec_single_csv $biopsyval
+
