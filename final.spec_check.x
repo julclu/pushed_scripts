@@ -5,8 +5,8 @@ set tnum = `pwd | cut -d"/" -f5`
 ## --------------------------- Series run ---------------------------------
 
 set MRSI_series = `dcm_exam_info -${tnum} | grep 'MRSI' | awk 'NR==1{print $1}'`
-set LAC_series = `dcm_exam_info -${tnum} | grep 'LAC' | awk 'NR==1{print $1}'`
-set short_series = `dcm_exam_info -${tnum} | grep 'MRSI' | grep 'short' | awk 'NR==1{print $1}'`
+set LAC_series = `dcm_exam_info -${tnum} | grep -i 'LAC' | awk 'NR==1{print $1}'`
+set short_series = `dcm_exam_info -${tnum} | grep 'MRSI' | grep -i 'short' | awk 'NR==1{print $1}'`
 
 # mrsi 
 ## indicates that a series including the word "MRSI" was run
