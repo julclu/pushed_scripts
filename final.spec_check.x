@@ -91,7 +91,7 @@ echo $mrsi_run $lac_run $short_run $spectra_f $spec_sing_f $spec_short_f $spec_l
 ## Begin with only the SVK stuff 
 ## ----------------------------------------------------------------------
 
-cd /data/RECglioma/${bnum}/${tnum}
+cd /data/RECglioma/*/${tnum}
 if (-d svk_roi_analysis) then
     set svk_roi_analysis = 1
     if (-e svk_roi_analysis/${tnum}_lac_fbhsvdfcomb_biopsy_empcsahl_normxs_sinc.tab) then
