@@ -59,6 +59,7 @@ else
     set spec_lac_f = 0 
 endif
 
+
 ## --------------------------- Getting Lacemode ---------------------------------
 
 ## this is to see if lactate editing is on 
@@ -69,7 +70,7 @@ set Snum_tmp = `dcm_exam_info -${tnum} | grep 'MRSI' | awk '{print $1}'`
 if (`echo x$Snum_tmp` == `echo "x"` ) then
     set lacemode = 'no_matching_series'
 else 
-    set Snum = $LAC_series
+    set Snum = $MRSI_series
     if (-d ${Enum}/${Snum}_raw) then
         cd ${Enum}/${Snum}_raw
         if (-e ${tnum}.dat) then
@@ -113,7 +114,14 @@ if (-d svk_roi_analysis) then
     else
         set svk_spec_single_csv = 0
     endif
+else 
+    set svk_roi_analysis = 0
+    set svk_spec_lac_tab = 'NA'
+    set svk_spec_lac_csv = 'NA'
+    set svk_spec_single_tab = 'NA'
+    set svk_spec_single_csv = 'NA'
 endif
+echo "working"
 ## Biopsy evaluation 
 ## ----------------------------------------------------------------------
 
@@ -142,7 +150,7 @@ if (-d roi_analysis) then
         end
     else 
         set biopsyval = 'NA'
-    endif 
+    endif
 else 
   set roi_analysis = 0 
   set biopsyval = 'NA'
