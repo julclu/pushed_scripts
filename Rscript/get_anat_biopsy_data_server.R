@@ -1,16 +1,18 @@
-## ## get anatomical biopsy data -- server 
+## this will act as a source file for three functions: get_anat_biopsy, get_anat_biopsy_noheader & the wrapper script that will 
+## automatically pick the correct function to use 
 
 
-
-## in this script i will write something that will take as input the bnum_tnum_df and find the biopsy data 
+########################################################################################
+######################  If we have a measure and a specific header label of interest 
+########################################################################################
 
 ## we don't need an roilabel since we are only extracting biopsies
-get_anat_biopsy=function(bnum_tnum_df, measure, headerlabel){
+get_anat_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
   data=data.frame()
   for(i in 1:dim(bnum_tnum_df)[1]){
     
     ## here we are reading in the csv file from the first element in bnum_tnum_df 
-    y=paste("/data/bioe2/REC_HGG/", bnum_tnum_df$bnum[i], "/", bnum_tnum_df$tnum[i], "/svk_roi_analysis/", bnum_tnum_df$tnum[i],  "_roi_flt1cfse.csv", sep="")
+    y=paste("/data/RECglioma/", bnum_tnum_df$bnum[i], "/", bnum_tnum_df$tnum[i], "/svk_roi_analysis/", bnum_tnum_df$tnum[i],  "_roi_flt1cfse.csv", sep="")
     tnum_roi_flt1cfse=read.table(y, sep=",", header=T)
     
     ## here we are going to get the measure block we are looking for 
@@ -21,7 +23,6 @@ get_anat_biopsy=function(bnum_tnum_df, measure, headerlabel){
     bion = nrow - 10 
     
     ## here we are going to extract only the biopsy information rows 
-    tnum_roi_flt1cfse_measure = data.frame(tnum_roi_flt1cfse_measure, biopsy_binary="0")
     if ("nawm" %in% tnum_roi_flt1cfse_measure$roi.label[1:10]){
       tnum_roi_flt1cfse_m_biopsies = tnum_roi_flt1cfse_measure[12:nrow,]
     }
@@ -45,8 +46,6 @@ get_anat_biopsy=function(bnum_tnum_df, measure, headerlabel){
     ## here we are binding the data with the previous measurement 
     data = rbind(data, tnum_roi_flt1cfse_m_r_headl)
   }
-  y=paste("/home/sf673542/analysis/purest_data/final_to_merge/REC_HGG_anatomical_biopsy_", measure, "_", headerlabel, "_", dim(bnum_tnum_df)[1], ".csv", sep="")
-  write.table(data, y, row.names=F, sep=",")
   return(data)
 }
 
@@ -55,11 +54,15 @@ get_anat_biopsy=function(bnum_tnum_df, measure, headerlabel){
 ## options for measure: median, percent25, percent75, mean, sd, min, max, kurtosis, mode, percent10, percent90, skewness, sum 
 ## options for headerlabel: vol.cc.      fse       fl      t1v      t1c       t1d    nfse     nfl    nt1v    nt1c    nt1d
 
+########################################################################################
+######################  If we have a measure and want all of the headers 
+########################################################################################
+
 
 get_anat_biopsy_noheader=function(bnum_tnum_df, measure){
   data=data.frame()
   for(i in 1:dim(bnum_tnum_df)[1]){
-    y=paste("/data/bioe2/REC_HGG/", bnum_tnum_df$bnum[i], "/", bnum_tnum_df$tnum[i],"/svk_roi_analysis/",bnum_tnum_df$tnum[i],  "_roi_flt1cfse.csv", sep="")
+    y=paste("/data/RECglioma/", bnum_tnum_df$bnum[i], "/", bnum_tnum_df$tnum[i],"/svk_roi_analysis/",bnum_tnum_df$tnum[i],  "_roi_flt1cfse.csv", sep="")
     tnum_roi_flt1cfse=read.table(y, sep=",", header=T)
     
     ## here we are going to get the measure block we are looking for 
@@ -89,8 +92,16 @@ get_anat_biopsy_noheader=function(bnum_tnum_df, measure){
     }
     
   }
-  
-  y=paste("/home/sf673542/analysis/purest_data/final_to_merge/REC_HGG_anatomical_", measure, "_allvalues_", dim(bnum_tnum_df)[1], ".csv", sep="")
-  write.table(data, y, row.names=F, sep=",")
   return(data)
 }
+
+get_anat_biopsy = function(bnum_tnum_df, measure, headerlabel){
+  if(!is.na(headerlabel)){
+      ## want to create the data frame like this 
+      get_anat_biopsy_withheader(bnum_tnum_df, measure, headerlabel)
+    }
+    else{
+      get_anat_biopsy_noheader(bnum_tnum_df, measure)
+    }
+}
+
