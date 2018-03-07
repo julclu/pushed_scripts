@@ -7,7 +7,7 @@ set wd = `pwd`
 set bnum = `echo $wd | cut -d"/" -f4`
 set tnum = `echo $wd | cut -d"/" -f5`
 
-echo "bnum tnum fsea fla t1va t1ca t1diffa fsea_res fla_res t1diffa_res cel t2all nel nec cel_res t2all_res svk svk_anat_tab svk_anat_csv"
+echo "bnum tnum fsea fla t1va t1ca t1diffa fsea_res fla_res t1diffa_res cel t2all nel nec cel_res t2all_res svk svk_anat_tab svk_anat_csv roi_analysis biopsy_has_value_in_tab biopsy_mask_res"
 
 
 ## check to see which anatomical images are in the images folder
@@ -155,30 +155,86 @@ else
     set rois = 0
 endif 
 
-
-## check to see if svk_roi_analysis has been run on these
 cd /data/RECglioma/${bnum}/${tnum}
 
 if (-d svk_roi_analysis) then
-    set svk = 1
-    cd svk_roi_analysis
-    if (-e ${tnum}_roi_flt1cfse.tab) then 
-        set svk_anat_tab = 1
-    else 
-        set svk_anat_tab = 0
-    endif
-    if (-e ${tnum}_roi_flt1cfse.csv) then 
-        set svk_anat_csv = 1
-    else
-        set svk_anat_csv = 0 
-    endif
-else
-    set svk = 0 
-    set svk_anat_tab = 'NA'
-    set svk_anat_csv = 'NA'
+  set svk_roi_analysis = 1
+  if (-e svk_roi_analysis/${tnum}_roi_flt1cfse.csv) then
+    set svk_anat_csv = 1
+  else 
+    set svk_anat_csv = 0 
+  endif
+  if (-e svk_roi_analysis/${tnum}_roi_flt1cfse.tab) then 
+    set svk_anat_tab = 1
+  else 
+    set svk_anat_tab = 0
+  endif 
+else 
+  set svk_roi_analysis = 0
+  set svk_anat_tab = 'NA'
+  set svk_anat_csv = 'NA'
 endif 
 
-echo "$bnum $tnum $fsea $fla $t1va $t1ca $t1diffa $fsea_res $fla_res $t1diffa_res $cel $t2all $nel $nec $cel_res $t2all_res $svk $svk_anat_tab $svk_anat_csv"
+## Now we will do the biopsy evaluation - three questions: 1) is there an roi_analysis folder? 2) are the screenshots at the correct resolution? 3) is there value in the .tab file for the biopsy? 
+## ----------------------------------------------------------------------
+## Question1 : is there an roi_analysis folder? 
+if (-d roi_analysis) then 
+  set roi_analysis = 1
+  ## ----------------------------------------------------------------------
+  ## Question 2: if there is roi_analysis folder, are ALL of the screenshots at the correct resolution? 
+  ## vialid_res 
+  ## Find the vialIDs of all the screenshots 
+  set vialID = `ls roi_analysis/${tnum}_t1ca_*.byt | cut -d"/" -f2 | cut -d"_" -f3 | cut -d "." -f1`
+  ## Find the number of vialIDs (number of biopsys)
+  @ bionum = `echo "${#vialID}"`
+  @ index = 1 
+  ## Initializing to a value that doesn't really make sense right now
+  set vialid_res = 3
+  ## Using a while loop to cycle through the number of vialIDs
+  while ($index <= $bionum)
+    ## set the vialID name
+    set vialid_index = `echo $vialID[$index]`
+    ## find the resolution of the specific vial ID we are looking at 
+    set vialid_index_res =  `more roi_analysis/${tnum}_t1ca_${vialid_index}.idf | grep 'pixelsize(mm):' | awk 'NR<=3{print $8}'`
+    ## check to see if the resolution is correct; we are also using the condition vialid_res = 0 b/c if it equals 1 already, don't need to check again 
+    if (`echo $vialid_index_res` != '1.00000 1.00000 1.50000') then
+      set vialid_res = 0
+    else if (`echo $vialid_res` == '0' && `echo $vialid_index_res` == '1.00000 1.00000 1.50000') then 
+      set vialid_res = 0
+    else 
+      set vialid_res = 1
+    endif
+    @ index = $index + 1
+  end 
+  ## ----------------------------------------------------------------------
+  ## Question 3: is there value in the .tab file for the biopsy? 
+  ## biopsyval  
+  ## This makes sense here b/c we can only evaluate this if there exists an roi_analysis folder
+  ## This will only work if there exists an anat.tab file in svk_roi_analysis folder 
+  if (-e svk_roi_analysis/${tnum}_roi_flt1cfse.tab) then
+    set biopsyval = 0 
+    @ index = 1
+    ## here we will cycle through the vialIDs and check whether they have value in the flair area
+    while ($index <= $bionum)
+      set vialid_index = `echo $vialID[$index]`
+      ## this will look to see if the biopsy value is zero (so the previous value was zero) AND the next one is not zero, then we will set it; otherwise it won't do anything b/c already 1
+      if (`echo $biopsyval` == '0' && `more svk_roi_analysis/${tnum}_roi_flt1cfse.tab | grep $vialid_index | awk 'NR==2{print $4}'` != '0.00') then
+        set biopsyval = 1
+      endif
+      @ index = $index + 1
+    end
+  else 
+    set biopsyval = 'NA'
+  endif
+
+else 
+  set roi_analysis = 0 
+  set biopsyval = 'NA'
+  set vialid_res = 'NA'
+endif 
+
+
+echo "$bnum $tnum $fsea $fla $t1va $t1ca $t1diffa $fsea_res $fla_res $t1diffa_res $cel $t2all $nel $nec $cel_res $t2all_res $svk_roi_analysis $svk_anat_tab $svk_anat_csv $roi_analysis $biopsyval $vialid_res"
 
 
 ## check to see if there are values > 0 in the biopsy ROIs in the svk .tab files 

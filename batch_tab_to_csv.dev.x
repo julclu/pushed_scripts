@@ -8,10 +8,10 @@
 ## convert each .tab file to a csv using the function tab_to_csv
 
 ## To be honest I'm not sure what this thing does, but I'm keeping it here
-if ($#argv > 1 ) then
+if ($#argv != 1) then
     echo " "
-    echo "Usage: P01_run_fix_resolution_from_list"
-    echo "Read .cvs and copy all patients images in .cvs to droot"
+    echo "Usage: convert tab to csv "
+    echo "Please input list to convert."
     exit(1)
 endif
 
@@ -31,7 +31,7 @@ while ($i <= $m)
 	set tnum = `echo ${t} | cut -d" " -f$i`
 	echo $i $bnum $tnum
 
-	cd /data/RECgli/*${bnum}/*${tnum}
+	cd /data/RECglioma/*${bnum}/*${tnum}
 
 	if (-d svk_roi_analysis) then
 		echo "folder svk_roi_analysis exists, changing into directory"
