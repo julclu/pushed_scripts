@@ -1,10 +1,6 @@
-## this will act as a source file for three functions: get_anat_biopsy, get_anat_biopsy_noheader & the wrapper script that will 
-## automatically pick the correct function to use 
+## ## get anatomical biopsy data -- server 
 
-
-########################################################################################
-######################  If we have a measure and a specific header label of interest 
-########################################################################################
+## in this script i will write something that will take as input the bnum_tnum_df and find the biopsy data 
 
 ## we don't need an roilabel since we are only extracting biopsies
 get_anat_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
@@ -23,6 +19,7 @@ get_anat_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
     bion = nrow - 10 
     
     ## here we are going to extract only the biopsy information rows 
+    tnum_roi_flt1cfse_measure = data.frame(tnum_roi_flt1cfse_measure, biopsy_binary="0")
     if ("nawm" %in% tnum_roi_flt1cfse_measure$roi.label[1:10]){
       tnum_roi_flt1cfse_m_biopsies = tnum_roi_flt1cfse_measure[12:nrow,]
     }
@@ -54,10 +51,6 @@ get_anat_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
 ## options for measure: median, percent25, percent75, mean, sd, min, max, kurtosis, mode, percent10, percent90, skewness, sum 
 ## options for headerlabel: vol.cc.      fse       fl      t1v      t1c       t1d    nfse     nfl    nt1v    nt1c    nt1d
 
-########################################################################################
-######################  If we have a measure and want all of the headers 
-########################################################################################
-
 
 get_anat_biopsy_noheader=function(bnum_tnum_df, measure){
   data=data.frame()
@@ -70,7 +63,6 @@ get_anat_biopsy_noheader=function(bnum_tnum_df, measure){
     
     ## here we are going to calculate the number of biopsies just from this data 
     nrow = dim(tnum_roi_flt1cfse_measure)[1]
-    bion = nrow - 10 
     
     ## here we are going to extract only the biopsy information rows 
     if ("nawm" %in% tnum_roi_flt1cfse_measure$roi.label[1:10]){
@@ -96,12 +88,11 @@ get_anat_biopsy_noheader=function(bnum_tnum_df, measure){
 }
 
 get_anat_biopsy = function(bnum_tnum_df, measure, headerlabel){
-  if(!is.na(headerlabel)){
-      ## want to create the data frame like this 
+  if(is.na(headerlabel)){
+    ## want to create the data frame like this 
+      get_anat_biopsy_noheader(bnum_tnum_df, measure)
+  }
+    else{
       get_anat_biopsy_withheader(bnum_tnum_df, measure, headerlabel)
     }
-    else{
-      get_anat_biopsy_noheader(bnum_tnum_df, measure)
-    }
 }
-
