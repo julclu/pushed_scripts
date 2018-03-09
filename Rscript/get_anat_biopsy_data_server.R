@@ -1,7 +1,7 @@
 ## ## get anatomical biopsy data -- server 
 
 ## in this script i will write something that will take as input the bnum_tnum_df and find the biopsy data 
-
+library(dplyr)
 ## we don't need an roilabel since we are only extracting biopsies
 get_anat_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
   data=data.frame()
@@ -16,10 +16,9 @@ get_anat_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
     
     ## here we are going to calculate the number of biopsies just from this data 
     nrow = dim(tnum_roi_flt1cfse_measure)[1]
-    bion = nrow - 10 
     
     ## here we are going to extract only the biopsy information rows 
-    tnum_roi_flt1cfse_measure = data.frame(tnum_roi_flt1cfse_measure, biopsy_binary="0")
+    tnum_roi_flt1cfse_measure = data.frame(tnum_roi_flt1cfse_measure)
     if ("nawm" %in% tnum_roi_flt1cfse_measure$roi.label[1:10]){
       tnum_roi_flt1cfse_m_biopsies = tnum_roi_flt1cfse_measure[12:nrow,]
     }
@@ -39,7 +38,6 @@ get_anat_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
       tnum_roi_flt1cfse_m_r_headl= data.frame(tnum_roi_flt1cfse_m_biopsies[,1:4], headerlabel = NA) 
       colnames(tnum_roi_flt1cfse_m_r_headl)=c(colnames(tnum_roi_flt1cfse_m_r_headl)[1:4], headerlabel)
     }
-    
     ## here we are binding the data with the previous measurement 
     data = rbind(data, tnum_roi_flt1cfse_m_r_headl)
   }
@@ -53,6 +51,7 @@ get_anat_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
 
 
 get_anat_biopsy_noheader=function(bnum_tnum_df, measure){
+  #=data.frame(colnames=c("tab.file","t.num measure","roi.label","vol.cc.","fse","fl","t1v","t1c","t1d", "nfse","nfl","nt1v", "nt1c","nt1d"))
   data=data.frame()
   for(i in 1:dim(bnum_tnum_df)[1]){
     y=paste("/data/RECglioma/", bnum_tnum_df$bnum[i], "/", bnum_tnum_df$tnum[i],"/svk_roi_analysis/",bnum_tnum_df$tnum[i],  "_roi_flt1cfse.csv", sep="")
@@ -75,13 +74,14 @@ get_anat_biopsy_noheader=function(bnum_tnum_df, measure){
     ## now we have two conditions; either fse was in the table or it wasn't (I think), so we have two missing columns (fse and nfse) occasionally
     ## if this is the case, then we need to have two separate conditions 
     
-    if ( 'fse' %in% colnames(tnum_roi_flt1cfse_measure)){
-      data = rbind(data, tnum_roi_flt1cfse_m_biopsies)
-    }
-    else {
-      tnum_roi_flt1cfse_m_biopsies= data.frame(tnum_roi_flt1cfse_m_biopsies[,1:5], fse=NA, tnum_roi_flt1cfse_m_biopsies[,6:9], nfse=NA, tnum_roi_flt1cfse_m_biopsies[,10:dim(tnum_roi_flt1cfse_m_biopsies)[2]])
-      data = rbind(data, tnum_roi_flt1cfse_m_biopsies)
-    }
+#    if ( 'fse' %in% colnames(tnum_roi_flt1cfse_measure)){
+#      data = rbind(data, tnum_roi_flt1cfse_m_biopsies)
+#    }
+#    else {
+#      tnum_roi_flt1cfse_m_biopsies= data.frame(tnum_roi_flt1cfse_m_biopsies[,1:5], fse=NA, tnum_roi_flt1cfse_m_biopsies[,6:9], nfse=NA, tnum_roi_flt1cfse_m_biopsies[,10:dim(tnum_roi_flt1cfse_m_biopsies)[2]])
+#      data = rbind(data, tnum_roi_flt1cfse_m_biopsies)
+#    }
+    data = bind_rows(data, tnum_roi_flt1cfse_m_biopsies)
     
   }
   return(data)
