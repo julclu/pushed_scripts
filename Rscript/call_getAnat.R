@@ -21,6 +21,7 @@ if (length(args)<=2) {
 }
 
 source("/home/sf673542/pushed_scripts/Rscript/get_anat_biopsy_data_server.R")
-bnum_tnum_df = read.csv(args[1])
+bnum_tnum_df = read.csv(args[1], header=F)
+colnames(bnum_tnum_df)=c("bnum", "tnum", "DUMMY")
 data = get_anat_biopsy(bnum_tnum_df, measure= args[3], headerlabel=args[4])
 write.table(data, args[2], sep=",")
