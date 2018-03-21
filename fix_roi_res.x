@@ -1,24 +1,9 @@
 #!/bin/csh -f
 
-<<<<<<< HEAD
-set bnum = `pwd | cut -d"/" -f4`
-set tnum = `pwd | cut -d"/" -f5`
-
-cd images
-=======
 ## run from within rois dir
 set bnum = `pwd | cut -d"/" -f4`
 set tnum = `pwd | cut -d"/" -f5`
 set roi = $1 
-
->>>>>>> master
-
-# fix/create ref.idf
-# @input_idf = ("$reference_idf\n", "d\n","256 256 140\n", "256 256 210\n", "1.5\n", "${root}_ref\n");
-# csi_run_interactive_program("modify_idf_v5", $output_file, @input_idf);
-#
-
-<<<<<<< HEAD
 
 # 
 

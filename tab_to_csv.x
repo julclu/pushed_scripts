@@ -26,4 +26,6 @@ if (-d svk_roi_analysis) then
 
 else
     echo "no svk_roi_analysis folder, will skip"
+
 endif
+
