@@ -119,6 +119,7 @@ endif
 
 #echo 'images check complete'
 
+
 ## check to see which rois are in the rois folder
 cd /data/RECglioma/${bnum}/${tnum}
 
