@@ -195,7 +195,6 @@ get_ev2000_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
           tnum_roi_ev1ev2ev32000_m_biopsy = tnum_roi_ev1ev2ev32000_measure[7:nrow,]
         }
         
-        
         if (dim(tnum_roi_ev1ev2ev32000_m_biopsy)[2]>13){
           tnum_roi_ev1ev2ev32000_m_biopsy_tmp = data.frame(tnum_roi_ev1ev2ev32000_m_biopsy[,1:5], ev1=tnum_roi_ev1ev2ev32000_m_biopsy$ev1, 
                                                            ev2=tnum_roi_ev1ev2ev32000_m_biopsy$ev2, ev3= tnum_roi_ev1ev2ev32000_m_biopsy$ev3, 
@@ -205,6 +204,20 @@ get_ev2000_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
           tnum_roi_ev1ev2ev32000_m_biopsy=tnum_roi_ev1ev2ev32000_m_biopsy_tmp
         }
         data = rbind(data, tnum_roi_ev1ev2ev32000_m_biopsy)
+
+        if(headerlabel %in% colnames(tnum_roi_ev1ev2ev32000_m_biopsy)){
+          exactheaderlabel=paste("^", headerlabel,"$", sep="")
+          h=grep(exactheaderlabel, colnames(tnum_roi_ev1ev2ev32000_m_biopsy))
+          tnum_roi_adcfa2000_m_r_headl= data.frame(tnum_roi_ev1ev2ev32000_m_biopsy[,1:4], headerlabel = tnum_roi_ev1ev2ev32000_m_biopsy[,h]) 
+          colnames(tnum_roi_adcfa2000_m_r_headl)=c(colnames(tnum_roi_adcfa2000_m_r_headl)[1:4], headerlabel)
+        }
+        else{
+          tnum_roi_adcfa2000_m_r_headl= data.frame(tnum_roi_ev1ev2ev32000_m_biopsy[,1:4], headerlabel = NA) 
+          colnames(tnum_roi_adcfa2000_m_r_headl)=c(colnames(tnum_roi_adcfa2000_m_r_headl)[1:4], headerlabel)
+        }
+        
+        data = rbind(data, tnum_roi_adcfa2000_m_r_headl)
+
         
       }
       else{
@@ -217,9 +230,6 @@ get_ev2000_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
   }
   return(data)
 }
-
-
-
 
 ## here I want to create a function where if you specify datatype = adcfa or ev, you can choose either to get one or the other; 
 ## however, if you want both types of information, you can set datatype to "all" and retrieve all of it 
