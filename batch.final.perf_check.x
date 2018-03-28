@@ -22,7 +22,7 @@ set flag = 0
 @ i = 1
 @ m = `echo $n | cut -d"." -f2`
 
-echo "i bnum tnum asl_run dsc_run dsc_topup perf_folder perf_aligned_folder perf_topupAligned_folder perf_biopsy_folder"
+echo "i,bnum,tnum,perf_run,asl_run,dsc_run,dsc_topup,perf_folder,perf_aligned_folder,perf_topupAligned_folder,perf_biopsy_folder"
 
 while ($i <= $m)
 
@@ -32,6 +32,13 @@ set tnum = `echo ${t} | cut -d" " -f$i`
 cd /data/RECglioma/${bnum}/${tnum}/
 
 ## --------------------------- Which series were run? ---------------------------------
+## Was there a series at all run w/ term "Perf in there?"
+set perf_run = `dcm_exam_info -${tnum} | grep 'Perfusion' -i | awk 'NR==1{print $1}'`
+if ($perf_run !='') then 
+    set perf_run = 1
+else
+    set perf_run = 0
+endif
 
 ## Was ASL run? 
 set asl_run = `dcm_exam_info -${tnum} | grep 'ASL' | awk 'NR==1{print $1}'`
@@ -86,7 +93,7 @@ else
     set perf_biopsy_folder = 0 
 endif
 
-echo $i $bnum $tnum $asl_run $dsc_run $dsc_topup $perf_folder $perf_aligned_folder $perf_topupAligned_folder $perf_biopsy_folder
+echo $i,$bnum,$tnum,$perf_run,$asl_run,$dsc_run,$dsc_topup,$perf_folder,$perf_aligned_folder,$perf_topupAligned_folder,$perf_biopsy_folder
 
 @ i = $i + 1
 

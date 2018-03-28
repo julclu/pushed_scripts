@@ -1,12 +1,15 @@
 #!/bin/csh -f
 
 ####
-if ($#argv > 1 ) then
-    echo "Please enter the path to the biopsies you're looking for. "
+if ($#argv != 2 ) then
+    echo "Please enter the path to the biopsies you're looking for."
+    echo "The csv file should be in the format csvname_csvname.#.csv"
+    echo "with # representing the number of biopsies."
+    echo "Please set your second argument to be the path/file you'd like to write out."
     exit(1)
 endif
 set n = $1
-set broot = /data/bioe2
+set broot = /data/RECglioma
 #set b = `less /home/janinel/perf_biopsy_data/P01_NEW_HGG/NEW_HGG_perf_biopsies_$n.csv | cut -d"," -f1`
 #set t = `less /home/janinel/perf_biopsy_data/P01_NEW_HGG/NEW_HGG_perf_biopsies_$n.csv | cut -d"," -f2`
 #set sf = `less /home/janinel/perf_biopsy_data/P01_NEW_HGG/NEW_HGG_perf_biopsies_$n.csv | cut -d"," -f3`
@@ -14,13 +17,13 @@ set broot = /data/bioe2
 
 set b = `more $n | cut -d"," -f1`
 set t = `more $n | cut -d"," -f2`
-set sf = `more $n | cut -d"," -f3`
 
-set notefile = /home/sf673542/analysis/purest_data/perfusion/run_perf_biopsy_notes.csv
+
+set notefile = $2
 if (-e $notefile) then
-	mv $notefile /home/sf673542/analysis/purest_data/perfusion/run_perf_biopsy_notes_lastrun.csv
+	mv $notefile /home/sf673542/analysis/run_perf_biopsy_notes_lastrun.csv
 endif
-echo "# bnum tnum sfnum vial phn_nlin cbvn_nlin recov_nlin rf_nlin rfn_nlin phn_npar recov_npar phn_nlin_nn cbvn_nlin_nn recov_nlin_nn rf_nlin_nn phn_npar_nn recov_npar_nn phn_nlin_r cbvn_nlin_r recov_nlin_r rf_nlin_r phn_npar_r recov_npar_r" >> $notefile
+echo "# bnum tnum vial phn_nlin cbvn_nlin recov_nlin rf_nlin rfn_nlin phn_npar recov_npar phn_nlin_nn cbvn_nlin_nn recov_nlin_nn rf_nlin_nn phn_npar_nn recov_npar_nn phn_nlin_r cbvn_nlin_r recov_nlin_r rf_nlin_r phn_npar_r recov_npar_r" >> $notefile
 set flag = 0
 @ i = 1
 @ m = `echo $n | cut -d"." -f2`
@@ -29,11 +32,11 @@ while ($i <= $m)
 
 	set bnum = `echo ${b} | cut -d" " -f$i`
 	set tnum = `echo ${t} | cut -d" " -f$i`
-	set sfnum = `echo ${sf} | cut -d" " -f$i`
-	echo $i $bnum $tnum sf$sfnum
+
+	echo $i $bnum $tnum 
 
 	#need to first find vialID
-    cd /data/bioe2/*/${bnum}/${tnum}
+    cd /data/RECglioma/${bnum}/${tnum}
     if (-e perf_biopsy) then
     	mv perf_biopsy biopsy_perf.bak
     endif
@@ -47,9 +50,9 @@ while ($i <= $m)
 	set flag = 0
 	while ($j <= ${num_vials})
 
-		echo "$i $broot/$bnum/$tnum $sfnum $vialID[$j]"
+		echo "$i $broot/$bnum/$tnum $vialID[$j]"
 		cd $cwd
-		set out = "$i $bnum $tnum $sfnum $vialID[$j]"
+		set out = "$i $bnum $tnum $vialID[$j]"
 
 	   	pwd
 		# check for aligned perfusion

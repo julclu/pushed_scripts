@@ -8,7 +8,7 @@
 ## set tnum 
 set bnum = `pwd | cut -d"/" -f4`
 set tnum = `pwd | cut -d"/" -f5`
-#set cwd = `pwd`
+set cwd = `pwd`
 ## set Enum to E folder 
 set Enum = `ls -d E*`
 set Snum = `dcm_exam_info -${tnum} | grep 'HARDI' | awk 'NR==1{print $1}'`

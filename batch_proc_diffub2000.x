@@ -19,51 +19,37 @@ set flag = 0
 @ m = `echo $n | cut -d"." -f2`
 echo "m set"
 
+echo "i bnum tnum b2000_process_status"
+
 while ($i <= $m)
 
 
 set bnum = `echo ${b} | cut -d" " -f$i`
 set tnum = `echo ${t} | cut -d" " -f$i`
+cd /data/RECglioma/*/${tnum}
 
-set Snum_tmp = `dcm_exam_info -${tnum} | grep 'HARDI' | awk '{print $1}'`      
-set Snum = $Snum_tmp[1]
-if (`echo $Snum` != '') then
-    @ b2000_run = 1
-else
-    @ b2000_run = 0
-endif 
+set Snum = `dcm_exam_info -${tnum} | grep 'HARDI' | awk 'NR==1{print $1}'`
 
-if (-d /data/RECglioma/${bnum}/${tnum}/diffusion_b=2000) then
-    cd /data/RECglioma/${bnum}/${tnum}/diffusion_b=2000
-    echo "Changed into diffusion directory of $bnum $tnum"
-    if (-e ${tnum}_2000_adca.idf) then
-        set diffu_status = "Processed."
-        echo $diffu_status
-    else if (-e ${tnum}_2000_adc.idf) then 
-         align_DTI $tnum t1va
-         set diffu_status = "Aligned."
-         echo $diffu_status
-    else 
-        set diffu_status = "Dir_b2000_exists, look into."
-        echo $diffu_status
-    endif
-else 
-    cd /data/RECglioma/${bnum}/${tnum}
-    set Enum = `ls -d E*`
-    if (-e ${Enum}/${Snum}/${Enum}S${Snum}I1.DCM) then
-        echo "DTI b=2000 series exists on disk.. skipping to import."
+if ($Snum != '') then ## if the 2000 was run 
+    set b2000_run = 1
+    if (-d diffusion_b=2000) then ## if there exists a diffu_b2000 folder already
+        set b2000_process_status = "already_processed"
     else
-        if (${b2000_run} == 1) then 
-            echo "getting DTI b=2000 series from archive"
-            dcm_qr -${tnum} -s $Snum -e $cwd -g 
-            echo "processing DTI b=2000"
+        if (-d ${Enum}/${Snum}) then
+            set b2000_process_status = "on_disk_unprocessed"
             process_DTI_brain ${Enum}/${Snum} ${tnum}
             rm -r ${cwd}/${Enum}/${Snum}
-        else
-            set diffu_status = "b2000_not_run"
+        else 
+            dcm_qr -${tnum} -s $Snum -e $cwd -g
+            process_DTI_brain ${Enum}/${Snum} ${tnum}
+            set b2000_process_status = "not_on_disk_unprocessed"
+            rm -r ${cwd}/${Enum}/${Snum}
         endif
     endif
+else 
+    set b2000_run = 0
 endif
 
+echo $i $bnum $tnum $b2000_process_status
 @ i = $i + 1
 end
