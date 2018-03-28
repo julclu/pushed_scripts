@@ -38,7 +38,7 @@ set flag = 0
 @ i = 1
 @ m = `echo $n | cut -d"." -f2`
 
-echo "bnum tnum fsea fla t1va t1ca t1diffa fsea_res fla_res t1diffa_res cel t2all nel nec cel_res t2all_res svk_roi_analysis svk_anat_tab svk_anat_csv roi_analysis biopsy_has_value_in_tab biopsy_mask_res"
+echo "bnum,tnum,fsea,fla,t1va,t1ca,t1diffa,fsea_res,fla_res,t1diffa_res,celt2all,nel,nec,cel_res,t2all_res,svk_roi_analysis,svk_anat_tab,svk_anat_csv,roi_analysis,biopsy_has_value_in_tab,biopsy_mask_res"
 
 while ($i <= $m)
 
@@ -277,7 +277,7 @@ else
   set vialid_res = 'NA'
 endif 
 
-echo "$bnum $tnum $fsea $fla $t1va $t1ca $t1diffa $fsea_res $fla_res $t1diffa_res $cel $t2all $nel $nec $cel_res $t2all_res $svk_roi_analysis $svk_anat_tab $svk_anat_csv $roi_analysis $biopsyval $vialid_res"
+echo "$bnum,$tnum,$fsea,$fla,$t1va,$t1ca,$t1diffa,$fsea_res,$fla_res,$t1diffa_res,$cel,$t2all,$nel,$nec,$cel_res,$t2all_res,$svk_roi_analysis,$svk_anat_tab,$svk_anat_csv,$roi_analysis,$biopsyval,$vialid_res"
 
 @ i = $i + 1
 

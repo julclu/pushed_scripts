@@ -42,7 +42,7 @@ set flag = 0
 @ m = `echo $n | cut -d"." -f2`
 
 #echo "i bnum tnum b1000_run b1000_folder b1000_adc b1000_adca b1000_adca_res b1000_faa b2000_run b2000_folder b2000_adc b2000_adca b2000_adca_res b2000_faa svk_roi_analysis svk_adca1000_tab svk_ev1000_tab svk_adca1000_csv svk_ev1000_csv svk_adca2000_tab svk_ev2000_tab svk_adca2000_csv svk_ev2000_csv roi_analysis biopsyval_adca1000 biopsyval_ev1000 biopsyval_adca2000 biopsyval_ev2000"
-echo "i bnum tnum b1000_folder b1000_adc b1000_adca b1000_adca_res b1000_faa b2000_run b2000_folder b2000_adc b2000_adca b2000_adca_res b2000_faa svk_roi_analysis svk_adca1000_tab svk_ev1000_tab svk_adca1000_csv svk_ev1000_csv svk_adca2000_tab svk_ev2000_tab svk_adca2000_csv svk_ev2000_csv roi_analysis biopsyval_adca1000 biopsyval_ev1000 biopsyval_adca2000 biopsyval_ev2000"
+echo "i,bnum,tnum,b1000_folder,b1000_adc,b1000_adca,b1000_adca_res,b1000_faa,b2000_run,b2000_folder,b2000_adc,b2000_adca,b2000_adca_res,b2000_faa,svk_roi_analysis,svk_adca1000_tab,svk_ev1000_tab,svk_adca1000_csv,svk_ev1000_csv,svk_adca2000_tab,svk_ev2000_tab,svk_adca2000_csv,svk_ev2000_csv,roi_analysis,biopsyval_adca1000,biopsyval_ev1000,biopsyval_adca2000,biopsyval_ev2000"
 
 while ($i <= $m)
 
@@ -285,7 +285,7 @@ else
   set biopsyval_ev2000 = 'NA'
 endif 
 
-echo $i $bnum $tnum $b1000_folder $b1000_adc $b1000_adca $b1000_adca_res $b1000_faa $b2000_run $b2000_folder $b2000_adc $b2000_adca $b2000_adca_res $b2000_faa $svk_roi_analysis $svk_adca1000_tab $svk_ev1000_tab $svk_adca1000_csv $svk_ev1000_csv $svk_adca2000_tab $svk_ev2000_tab $svk_adca2000_csv $svk_ev2000_csv $roi_analysis $biopsyval_adca1000 $biopsyval_ev1000 $biopsyval_adca2000 $biopsyval_ev2000
+echo $i,$bnum,$tnum,$b1000_folder,$b1000_adc,$b1000_adca,$b1000_adca_res,$b1000_faa,$b2000_run,$b2000_folder,$b2000_adc,$b2000_adca,$b2000_adca_res,$b2000_faa,$svk_roi_analysis,$svk_adca1000_tab,$svk_ev1000_tab,$svk_adca1000_csv,$svk_ev1000_csv,$svk_adca2000_tab,$svk_ev2000_tab,$svk_adca2000_csv,$svk_ev2000_csv,$roi_analysis,$biopsyval_adca1000,$biopsyval_ev1000,$biopsyval_adca2000,$biopsyval_ev2000
 
 @ i = $i + 1
 
