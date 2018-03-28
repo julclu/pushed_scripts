@@ -21,6 +21,7 @@ else
             echo $lacemode_tmp
         endif
     else
-        echo "get_series_from_pacs"
+        set lacemode_tmp = "get_series_from_pacs"
+        echo $lacemode_tmp
     endif
 endif 
