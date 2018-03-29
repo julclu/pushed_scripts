@@ -2,8 +2,6 @@
 
 library(dplyr)
 #######################################################################################################################################
-bnum_tnum_df = read.csv("/home/sf673542/analysis/biopsy_data/rechgg_idlist_030218.88.csv", header=F)
-colnames(bnum_tnum_df)=c("bnum", "tnum", "DUMMY")
 get_spec_biopsy_noheader=function(bnum_tnum_df, measure){
   data=data.frame()
   for(i in 1:dim(bnum_tnum_df)[1]){
