@@ -1,10 +1,8 @@
 #!/bin/csh -f
 
 ## run from within tfolder 
-set tnum = $1 
-set seo = $2 
+set tnum = `pwd | cut -d"/" -f5` 
 
-cd /data/bioe2/REC_HGG/*/${tnum}
 set Enum = `ls -d E*`
 echo 'Enum set'
 set Snum_tmp = `dcm_exam_info -${tnum} | grep 'MRSI' | awk '{print $1}'`
@@ -24,9 +22,4 @@ met_prep128_svk.x $tnum ${tnum}_single_fbhsvdfcomb empcsa $bionum biopsy $vialID
 echo 'met_prep128_svk.x completed'
 met_stats_svk.x $tnum ${tnum}_single_fbhsvdfcomb empcsa $bionum biopsy $vialID
 echo 'met_stats_svk.x completed'
-
-
-
-
-
 
