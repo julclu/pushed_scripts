@@ -88,4 +88,15 @@ get_spec_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
   return(data)
 }
 
+##############################################################################################################################
+
+get_spec_biopsy = function(bnum_tnum_df, measure, headerlabel){
+  if(is.na(headerlabel)){
+    ## want to create the data frame like this 
+    get_spec_biopsy_noheader(bnum_tnum_df, measure)
+  }
+  else{
+    get_spec_biopsy_withheader(bnum_tnum_df, measure, headerlabel)
+  }
+}
 
