@@ -1,66 +1,10 @@
 #!/bin/csh -f
 
-
-## Written by J. Cluceru on 02.05.18 
-
-## This script is to check the entire workflow of diffusion and what has been completed 
-## Please use input using a path to a .csv file which is formatted to bnum/tnum/DUMMY;
-## there should be no header labeling 
-## the bnum/tnum. It must be labeled with the number (#) of bnum/tnum as a .#.csv 
-## Final version completed on 02.06.18 
-
-
-if ($#argv < 1 ) then
-    echo ""
-    echo "This script is for you to understand what has been completed for diffusion scans."
-    echo "The output will be a list of what has been completed."
-    echo ""
-    echo "An example of it's usage would be /pathtoscript/batch.final.diffu_check.x /pathtobnum_tnumlist/bnumtnumlist.#.csv"
-    echo ""
-    echo "Please input the path to the list of bnum/tnum you'd like to check. Make sure naming conventions are correct."
-    echo ""
-    echo "b1000_run, b2000_run check whether these were run in dcm_exam_info"
-    echo "b1000_adc, b1000_adca, b2000_adc, b2000_adca, b1000_faa, b2000_faa check for existence of these images in respective folders."
-    echo "b1000_adca_res and b2000_adca_res check to see if the resolution is properly 1x1x1.5"
-    echo "svk_roi_analysis: checks for existence of svk_roi_analysis folder"
-    echo "svk_adca1000_tab: checks for existence of _1000_adcfa.tab file in /svk_roi_analysis/"
-    echo "the same is true for the tab and csv variables"
-    echo "biopsyval: 1 means there exists values for diffusion biopsies that are greater than zero for the FLAIR image;"
-    echo "biopsyval = 0 indicates lack of value for the biopsy in the FLAIR image; NA indicates no .tab file to look in."
-
-    exit(1)
-
-endif
-
-set n = $1
-set broot = /data/*glioma
-set b = `more $n | cut -d"," -f1`
-set t = `more $n | cut -d"," -f2`
-
-set flag = 0
-@ i = 1
-@ m = `echo $n | cut -d"." -f2`
-
-#echo "i bnum tnum b1000_run b1000_folder b1000_adc b1000_adca b1000_adca_res b1000_faa b2000_run b2000_folder b2000_adc b2000_adca b2000_adca_res b2000_faa svk_roi_analysis svk_adca1000_tab svk_ev1000_tab svk_adca1000_csv svk_ev1000_csv svk_adca2000_tab svk_ev2000_tab svk_adca2000_csv svk_ev2000_csv roi_analysis biopsyval_adca1000 biopsyval_ev1000 biopsyval_adca2000 biopsyval_ev2000"
-echo "i,bnum,tnum,b1000_folder,b1000_adc,b1000_adca,b1000_adca_res,b1000_faa,b2000_run,b2000_folder,b2000_adc,b2000_adca,b2000_adca_res,b2000_faa,svk_roi_analysis,svk_adca1000_tab,svk_ev1000_tab,svk_adca1000_csv,svk_ev1000_csv,svk_adca2000_tab,svk_ev2000_tab,svk_adca2000_csv,svk_ev2000_csv,roi_analysis,biopsyval_adca1000,biopsyval_ev1000,biopsyval_adca2000,biopsyval_ev2000"
-
-while ($i <= $m)
-
-set bnum = `echo ${b} | cut -d" " -f$i`
-set tnum = `echo ${t} | cut -d" " -f$i`
-
-cd /data/*glioma/${bnum}/${tnum}/
+## run 
+set bnum = `pwd | cut -d"/" -f4`
+set tnum = `pwd | cut -d"/" -f5`
 
 ## --------------------------- 1000 ---------------------------------
-#set b1000_seriesnum = `dcm_exam_info -${tnum} | grep '24' | awk 'NR==1{print $1}'`
-#if ($b1000_seriesnum != "") then 
-#    set b1000_run = 1
-#else 
-#    set b1000_run = 0
-#endif
-
-#echo "check 1"
-
 if (-d diffusion_b=1000) then 
     set b1000_folder = 1
     ## check if there is an adc file 
@@ -285,18 +229,31 @@ else
   set biopsyval_ev2000 = 'NA'
 endif 
 
-echo $i,$bnum,$tnum,$b1000_folder,$b1000_adc,$b1000_adca,$b1000_adca_res,$b1000_faa,$b2000_run,$b2000_folder,$b2000_adc,$b2000_adca,$b2000_adca_res,$b2000_faa,$svk_roi_analysis,$svk_adca1000_tab,$svk_ev1000_tab,$svk_adca1000_csv,$svk_ev1000_csv,$svk_adca2000_tab,$svk_ev2000_tab,$svk_adca2000_csv,$svk_ev2000_csv,$roi_analysis,$biopsyval_adca1000,$biopsyval_ev1000,$biopsyval_adca2000,$biopsyval_ev2000
-
-@ i = $i + 1
-
-end
-
-
-
-
-
-
-
-
-
+echo "bnum $bnum" 
+echo "tnum $tnum"
+echo "b1000_folder $b1000_folder"
+echo "b1000_adc_exists $b1000_adc"
+echo "b1000_adca_exists $b1000_adca"
+echo "b1000_adca_res $b1000_adca_res"
+echo "b1000_faa_exists $b1000_faa"
+echo "b2000_run $b2000_run" 
+echo "b2000_folder $b2000_folder"
+echo "b2000_adc_exists $b2000_adc"
+echo "b2000_adca_exists $b2000_adca"
+echo "b2000_adca_res $b2000_adca_res"
+echo "b2000_faa_exists $b2000_faa"
+echo "svk_roi_anal_folder_exists $svk_roi_analysis"
+echo "svk_adca1000_tab_exists $svk_adca1000_tab"
+echo "svk_ev1000_tab_exists $svk_ev1000_tab"
+echo "svk_adca1000_csv_exists $svk_adca1000_csv"
+echo "svk_ev1000_csv_exists $svk_ev1000_csv"
+echo "svk_adca2000_tab_exists $svk_adca2000_tab"
+echo "svk_ev2000_tab_exists $svk_ev2000_tab"
+echo "svk_adca2000_csv_exists $svk_adca2000_csv"
+echo "svk_ev2000_csv_exists $svk_ev2000_csv"
+echo "roi_analysis_folder_exists $roi_analysis"
+echo "biopsy_has_value_in_adca1000 $biopsyval_adca1000"
+echo "biopsy_has_value_in_ev1000 $biopsyval_ev1000"
+echo "biopsy_has_value_in_adca2000 $biopsyval_adca2000"
+echo "biopsy_has_value_in_ev20000 $biopsyval_ev2000"
 

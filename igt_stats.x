@@ -18,5 +18,10 @@ set sfnum = `ls -d sf*`
 ## go into the sfnum directory
 cd $sfnum
 ## run igt_stats and output into a named file 
-igt_stats > ${tnum}_${sfnum}_igtstats.csv
+igt_stats.dev > ${tnum}_${sfnum}_igtstats.dev.csv
 
+cd ..
+if (-d svk_roi_analysis) then
+	cp ${sfnum}/${tnum}_${sfnum}_igtstats.dev.csv svk_roi_analysis
+
+endif

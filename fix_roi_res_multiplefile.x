@@ -1,4 +1,6 @@
 #!/bin/csh -f
+
+## run from within tfolder 
 set bnum = `pwd | cut -d"/" -f4`
 set tnum = `pwd | cut -d"/" -f5`
 
@@ -35,5 +37,5 @@ end
 
 
 # fix biopsy masks
-cd /data/bioe2/*/${bnum}/${tnum}/roi_analysis
-biopsy_make_masks --sf $sfnum -i ../images/${tnum}_t1ca -d 5 # -o ${tnum}_biopsy
+#cd ../roi_analysis
+#biopsy_make_masks --sf $sfnum -i ../images/${tnum}_t1ca -d 5 # -o ${tnum}_biopsy

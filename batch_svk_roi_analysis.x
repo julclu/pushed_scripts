@@ -23,7 +23,6 @@ set flag = 0
 while ($i <= $m)
 set bnum = `echo ${b} | cut -d" " -f$i`
 set tnum = `echo ${t} | cut -d" " -f$i`
-set sfnum = 
 
 echo $i $bnum $tnum $sfnum
 

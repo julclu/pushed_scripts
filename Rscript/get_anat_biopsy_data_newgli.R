@@ -3,7 +3,7 @@
 ## in this script i will write something that will take as input the bnum_tnum_df and find the biopsy data 
 library(dplyr)
 ## we don't need an roilabel since we are only extracting biopsies
-get_anat_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
+get_anat_biopsy_withheader_newgli=function(bnum_tnum_df, measure, headerlabel){
   data=data.frame()
   for(i in 1:dim(bnum_tnum_df)[1]){
     
@@ -64,7 +64,7 @@ get_anat_biopsy_withheader=function(bnum_tnum_df, measure, headerlabel){
 ## options for headerlabel: vol.cc.      fse       fl      t1v      t1c       t1d    nfse     nfl    nt1v    nt1c    nt1d
 
 
-get_anat_biopsy_noheader=function(bnum_tnum_df, measure){
+get_anat_biopsy_noheader_newgli=function(bnum_tnum_df, measure){
   #=data.frame(colnames=c("tab.file","t.num measure","roi.label","vol.cc.","fse","fl","t1v","t1c","t1d", "nfse","nfl","nt1v", "nt1c","nt1d"))
   data=data.frame()
   for(i in 1:dim(bnum_tnum_df)[1]){
@@ -116,12 +116,12 @@ get_anat_biopsy_noheader=function(bnum_tnum_df, measure){
   return(data)
 }
 
-get_anat_biopsy = function(bnum_tnum_df, measure, headerlabel){
+get_anat_biopsy_newgli = function(bnum_tnum_df, measure, headerlabel){
   if(is.na(headerlabel)){
     ## want to create the data frame like this 
-    get_anat_biopsy_noheader(bnum_tnum_df, measure)
+    get_anat_biopsy_noheader_newgli(bnum_tnum_df, measure)
   }
   else{
-    get_anat_biopsy_withheader(bnum_tnum_df, measure, headerlabel)
+    get_anat_biopsy_withheader_newgli(bnum_tnum_df, measure, headerlabel)
   }
 }

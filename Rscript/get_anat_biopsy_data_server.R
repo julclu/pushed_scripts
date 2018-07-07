@@ -70,7 +70,6 @@ get_anat_biopsy_noheader=function(bnum_tnum_df, measure){
   for(i in 1:dim(bnum_tnum_df)[1]){
     y=paste("/data/RECglioma/", bnum_tnum_df$bnum[i], "/", bnum_tnum_df$tnum[i], sep="")
     tnum_files = list.files(y)
-    #y=paste("/data/RECglioma/", bnum_tnum_df$bnum[i], "/", bnum_tnum_df$tnum[i],"/svk_roi_analysis/",bnum_tnum_df$tnum[i],  "_roi_flt1cfse.csv", sep="")
     if ("svk_roi_analysis" %in% tnum_files && "roi_analysis" %in% tnum_files){
       setwd(paste(y, "/svk_roi_analysis", sep=""))
       svk_files=list.files(pattern="csv")
@@ -92,16 +91,6 @@ get_anat_biopsy_noheader=function(bnum_tnum_df, measure){
           tnum_roi_flt1cfse_m_biopsies = tnum_roi_flt1cfse_measure[11:nrow,]
         }
         
-        ## now we have two conditions; either fse was in the table or it wasn't (I think), so we have two missing columns (fse and nfse) occasionally
-        ## if this is the case, then we need to have two separate conditions 
-        
-        #    if ( 'fse' %in% colnames(tnum_roi_flt1cfse_measure)){
-        #      data = rbind(data, tnum_roi_flt1cfse_m_biopsies)
-        #    }
-        #    else {
-        #      tnum_roi_flt1cfse_m_biopsies= data.frame(tnum_roi_flt1cfse_m_biopsies[,1:5], fse=NA, tnum_roi_flt1cfse_m_biopsies[,6:9], nfse=NA, tnum_roi_flt1cfse_m_biopsies[,10:dim(tnum_roi_flt1cfse_m_biopsies)[2]])
-        #      data = rbind(data, tnum_roi_flt1cfse_m_biopsies)
-        #    }
         data = bind_rows(data, tnum_roi_flt1cfse_m_biopsies)
       }
       else{

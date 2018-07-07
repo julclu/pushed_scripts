@@ -30,7 +30,7 @@ if ($#argv < 1 ) then
 endif
 
 set n = $1
-set broot = /data/RECglioma
+set broot = /data/*glioma
 set b = `more $n | cut -d"," -f1`
 set t = `more $n | cut -d"," -f2`
 
@@ -38,13 +38,13 @@ set flag = 0
 @ i = 1
 @ m = `echo $n | cut -d"." -f2`
 
-echo "bnum,tnum,fsea,fla,t1va,t1ca,t1diffa,fsea_res,fla_res,t1diffa_res,celt2all,nel,nec,cel_res,t2all_res,svk_roi_analysis,svk_anat_tab,svk_anat_csv,roi_analysis,biopsy_has_value_in_tab,biopsy_mask_res"
+echo "bnum,tnum,fsea,fla,t1va,t1ca,t1diffa,fsea_res,fla_res,t1diffa_res,cel,t2all,nel,nec,cel_res,t2all_res,svk_roi_analysis,svk_anat_tab,svk_anat_csv,roi_analysis,biopsy_has_value_in_tab,biopsy_mask_res"
 
 while ($i <= $m)
 
 set bnum = `echo ${b} | cut -d" " -f$i`
 set tnum = `echo ${t} | cut -d" " -f$i`
-cd /data/RECglioma/${bnum}/${tnum}/images
+cd /data/*glioma/${bnum}/${tnum}/images
 
 # fsea
 if (-e ${tnum}_fsea.int2) then
@@ -121,10 +121,10 @@ endif
 
 
 ## check to see which rois are in the rois folder
-cd /data/RECglioma/${bnum}/${tnum}
+cd /data/*glioma/${bnum}/${tnum}
 
 if (-d rois) then
-    cd /data/RECglioma/${bnum}/${tnum}/rois
+    cd /data/*glioma/${bnum}/${tnum}/rois
     set rois = 1
 
     if (-e ${tnum}_cel.byt) then
@@ -199,7 +199,7 @@ endif
 
 ## Begin with only the SVK stuff 
 ## ----------------------------------------------------------------------
-cd /data/RECglioma/${bnum}/${tnum}
+cd /data/*glioma/${bnum}/${tnum}
 
 if (-d svk_roi_analysis) then
   set svk_roi_analysis = 1

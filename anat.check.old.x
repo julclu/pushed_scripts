@@ -4,8 +4,8 @@
 ## to be run inside of the t number 
 
 set wd = `pwd`
-set bnum = `echo $wd | cut -d"/" -f4`
-set tnum = `echo $wd | cut -d"/" -f5`
+set bnum = `echo $wd | cut -d"/" -f5`
+set tnum = `echo $wd | cut -d"/" -f6`
 
 
 
@@ -87,7 +87,6 @@ endif
 
 
 ## check to see which rois are in the rois folder
-cd /data/*glioma/${bnum}/${tnum}
 
 if (-d rois) then
     cd /data/*glioma/${bnum}/${tnum}/rois
@@ -154,7 +153,7 @@ else
     set rois = 0
 endif 
 
-cd /data/*glioma/${bnum}/${tnum}
+
 
 if (-d svk_roi_analysis) then
   set svk_roi_analysis = 1
